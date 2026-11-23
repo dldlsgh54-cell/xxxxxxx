@@ -1,0 +1,13 @@
+{
+  "name": "threads-to-x",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "start": "node sync.mjs run",
+    "ui": "node --use-system-ca dashboard.mjs",
+    "test": "node --test"
+  },
+  "dependencies": { "twitter-text": "3.1.0" }
+}

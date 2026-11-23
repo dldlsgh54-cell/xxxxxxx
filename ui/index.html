@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8f4">
+  <title>Relay · Threads → X</title>
+  <link rel="stylesheet" href="/dashboard.css">
+  <script src="/client.js" defer></script>
+  <script src="/insights.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="주 메뉴">
+      <a class="brand" href="#overview" aria-label="Relay 개요"><span class="brand-mark" aria-hidden="true">⇄</span><span>Relay<span class="brand-caption">게시 자동화</span></span></a>
+      <nav class="nav">
+        <a href="#overview" data-page="overview" aria-current="page"><span class="nav-icon grid-icon" aria-hidden="true"></span>개요</a>
+        <a href="#connections" data-page="connections"><span class="nav-icon linked-icon" aria-hidden="true"></span>계정 연결</a>
+        <a href="#activity" data-page="activity"><span class="nav-icon activity-icon" aria-hidden="true">≡</span>게시 활동</a>
+        <a href="#insights" data-page="insights"><span class="nav-icon chart-icon" aria-hidden="true">▥</span>X 분석</a>
+        <a href="#settings" data-page="settings"><span class="nav-icon settings-icon" aria-hidden="true">⚙</span>설정</a>
+      </nav>
+      <div class="sidebar-bottom"><span class="device-icon" aria-hidden="true"></span><div><strong>이 PC에서 실행</strong><small>로컬 작업 공간</small></div></div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb"><label class="pair-picker"><span class="sr-only">활성 계정 연결</span><select id="pair-select" aria-label="활성 계정 연결"><option value="1">계정 연결 1</option></select></label><span class="crumb-slash" aria-hidden="true">/</span><strong id="page-name">개요</strong></div>
+        <div class="header-controls"><span class="pill" id="run-state"><i></i>연결 확인 중</span><button type="button" class="button button-small" id="preview-top"><span aria-hidden="true">◉</span> 미리보기</button></div>
+      </header>
+
+      <main id="main-content">
+        <div id="overview" class="view">
+          <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-copy">
+              <span class="hero-tag"><span aria-hidden="true">⇄</span> Threads → X</span>
+              <h1 id="hero-title">한 번 올리고,<br>두 곳에 전하세요.</h1>
+              <p>Threads 글과 쿠팡 링크 댓글을 X에 자동으로 옮기세요.</p>
+              <button type="button" class="button button-lime" id="hero-action"><span id="hero-action-label">계정 연결 시작</span><span class="arrow" aria-hidden="true">↗</span></button>
+            </div>
+            <div class="hero-diagram" aria-hidden="true">
+              <div class="rings"></div>
+              <div class="diagram-path"></div>
+              <div class="diagram-node diagram-threads"><span class="platform-logo threads-logo">@</span><span>Threads</span></div>
+              <div class="diagram-hub"><span>⇄</span></div>
+              <div class="diagram-node diagram-x"><span class="platform-logo x-logo">𝕏</span><span>X</span></div>
+              <div class="diagram-caption"><b></b> 본문 · 이미지 · 쿠팡 댓글</div>
+            </div>
+          </section>
+
+          <section class="section" aria-labelledby="overview-accounts-title">
+            <div class="section-heading"><div><h2 id="overview-accounts-title">계정 연결</h2><p>원본 계정과 게시할 계정을 연결하세요.</p></div><a class="text-link" href="#connections">연결 관리 <span aria-hidden="true">→</span></a></div>
+            <div class="account-grid" data-accounts></div>
+          </section>
+
+          <div class="overview-bottom section">
+            <section class="panel overview-activity" aria-labelledby="overview-activity-title">
+              <div class="panel-heading"><div><h2 id="overview-activity-title">최근 게시 활동</h2><p>최근 동기화 결과를 확인하세요.</p></div><a class="text-link" href="#activity">전체 보기 <span aria-hidden="true">→</span></a></div>
+              <div id="recent-activity"></div>
+            </section>
+            <section class="panel overview-summary" aria-labelledby="overview-summary-title">
+              <div class="panel-heading"><div><h2 id="overview-summary-title">자동화 설정</h2><p id="current-settings-note">현재 적용할 실행 옵션입니다.</p></div><a class="text-link" href="#settings">설정 <span aria-hidden="true">→</span></a></div>
+              <dl class="summary-values"><div><dt>새 글 확인 주기</dt><dd id="overview-interval">60초</dd></div><div><dt>쿠팡 댓글 확인 주기</dt><dd id="overview-reply-interval">5분</dd></div><div><dt>X 게시 주기</dt><dd id="overview-publish-interval">즉시</dd></div><div><dt>최근 새 글 확인</dt><dd id="overview-check">기록 없음</dd></div></dl>
+            </section>
+          </div>
+        </div>
+
+        <div id="connections" class="view" hidden>
+          <div class="page-heading"><h1>계정 연결</h1><p>같은 주제의 Threads 계정과 X 계정을 한 쌍으로 연결하세요.</p></div>
+          <section aria-label="계정 연결 목록" class="pair-grid" id="pair-list"></section>
+          <div class="section-heading pair-heading"><div><h2 id="active-pair">계정 연결 1</h2><p>선택한 연결의 원본과 게시 계정입니다.</p></div><button type="button" class="button" id="rename-pair">연결 이름 변경</button></div>
+          <div class="account-grid" data-accounts></div>
+          <aside class="notice section"><span aria-hidden="true">ⓘ</span><div><strong>X 답글 권한</strong><p>셀프서비스 API에서 답글이 제한되면 쿠팡 댓글과 대상 글 주소가 게시 활동에 남습니다.</p><a class="text-link" href="https://docs.x.com/x-api/posts/manage-tweets/integrate#post-creation-restrictions-self-serve" target="_blank" rel="noopener noreferrer">X 공식 안내 ↗</a></div></aside>
+        </div>
+
+        <div id="activity" class="view" hidden>
+          <div class="page-heading"><h1>게시 활동</h1><p>본문과 쿠팡 댓글의 게시 결과를 확인하고 실패한 항목을 처리하세요.</p></div>
+          <div class="stats-grid"><div class="panel stat"><span>게시 완료</span><strong id="count-posted">0</strong></div><div class="panel stat"><span>게시 대기</span><strong id="count-pending">0</strong></div><div class="panel stat"><span>확인 필요</span><strong id="count-review">0</strong></div></div>
+          <section class="panel activity-panel section" aria-label="게시 기록"><div class="panel-heading"><h2>게시 기록</h2><label class="filter"><span>상태</span><select id="activity-filter"><option value="all">전체</option><option value="review">확인 필요</option><option value="posted">완료</option><option value="pending">대기</option></select></label></div><div id="all-activity"></div></section>
+        </div>
+
+        <div id="insights" class="view" hidden>
+          <div class="page-heading"><h1>X 계정 분석</h1><p>비슷한 주제의 쿠팡 파트너스 계정을 비교하고, 내 계정에서 시험할 게시 시간과 글 형식을 찾으세요.</p></div>
+          <section class="panel analysis-input" aria-labelledby="analysis-form-title">
+            <div class="panel-heading"><div><h2 id="analysis-form-title">비교할 공개 계정</h2><p>한 번에 최대 5개까지 비교합니다. 내 X 계정도 함께 입력할 수 있습니다.</p></div></div>
+            <form id="analysis-form" class="form-body analysis-form">
+              <label class="handles-field">X 계정 또는 프로필 주소<textarea name="handles" rows="2" maxlength="600" placeholder="@계정이름 또는 https://x.com/계정이름" required></textarea><small>여러 계정은 줄바꿈, 쉼표 또는 공백으로 구분하세요.</small></label>
+              <label>분석 기간<select name="days"><option value="14">최근 14일</option><option value="30" selected>최근 30일</option><option value="60">최근 60일</option></select></label>
+              <label>계정별 조회량<select name="limit"><option value="25">최대 25개</option><option value="50" selected>최대 50개</option><option value="100">최대 100개</option></select></label>
+              <div class="analysis-actions"><button type="submit" class="button button-primary" id="run-analysis" disabled>분석 시작 <span aria-hidden="true">→</span></button><button type="button" class="text-link inline-button" id="add-my-account" hidden>내 계정 추가</button></div>
+              <p class="subtle analysis-credit">분석 시작 시에만 X API 크레딧을 사용합니다. <a class="text-link" href="https://docs.x.com/x-api/getting-started/pricing" target="_blank" rel="noopener noreferrer">조회 요금 ↗</a></p>
+            </form>
+          </section>
+          <div class="notice section" id="analysis-connection" hidden><span aria-hidden="true">ⓘ</span><div>이 연결의 X 계정을 먼저 연결해 주세요. <a class="text-link" href="#connections">계정 연결 →</a></div></div>
+          <p class="notice system-error" id="analysis-error" role="alert" hidden></p>
+          <div id="analysis-result" class="section" aria-live="polite" aria-busy="false">
+            <div class="panel empty-state"><span class="empty-icon" aria-hidden="true">▥</span><div><strong>분석 결과가 여기에 표시됩니다</strong><p>요일과 시간대별 반응, 계정별 게시 빈도, 쿠팡 링크 위치를 비교할 수 있습니다.</p></div></div>
+          </div>
+          <details class="panel analysis-method section"><summary>분석 기준과 데이터 출처</summary><p>한국 시간으로 4시간 단위로 묶습니다. 반응 수는 좋아요·답글·리포스트·인용의 합계입니다. 게시 후 48시간이 지난 글의 성과를 비교하고, 노출 데이터가 충분하면 반응률을 사용합니다. 반응 점수는 같은 계정 안에서의 백분위이며, 계정별 중앙값을 같은 비중으로 합칩니다. 50점은 계정 내 중간 수준입니다.</p><p>쿠팡 링크는 공개 본문과 조회 범위 내 작성자 답글에서 확인합니다. 클릭과 판매 데이터는 집계에 포함되지 않습니다. 시간대 결과는 해당 표본의 관찰값입니다.</p><div class="form-actions"><a class="text-link" href="https://buffer.com/resources/best-time-to-post-on-twitter-x/" target="_blank" rel="noopener noreferrer">Buffer 시간대 분석 ↗</a><a class="text-link" href="https://www.socialinsider.io/twitter-analytics" target="_blank" rel="noopener noreferrer">Socialinsider 계정 비교 ↗</a><a class="text-link" href="https://docs.x.com/x-api/fundamentals/metrics" target="_blank" rel="noopener noreferrer">X 공개 지표 ↗</a></div></details>
+        </div>
+
+        <div id="settings" class="view" hidden>
+          <div class="page-heading"><h1>자동화 설정</h1><p>동기화 주기를 조정하고 Windows 백그라운드 실행을 관리하세요.</p></div>
+          <div class="settings-grid">
+            <section class="panel form-panel" aria-labelledby="rules-title">
+              <div class="panel-heading"><div><h2 id="rules-title">확인 및 게시 주기</h2><p>저장하면 실행 중인 자동화에도 적용됩니다.</p></div></div>
+              <form id="settings-form" class="form-body">
+                <label>새 글 확인 주기 <span class="unit-input"><input id="interval-input" name="interval" type="number" min="15" max="3600" value="60" required><span>초</span></span><small>Threads에서 새 글을 찾아 대기열에 추가하는 간격입니다. 15~3,600초</small></label>
+                <label>쿠팡 댓글 확인 주기 <span class="unit-input"><input id="reply-interval-input" name="replyInterval" type="number" min="15" max="3600" value="300" required><span>초</span></span><small>나중에 달린 쿠팡 링크 댓글을 다시 찾는 간격입니다. 15~3,600초</small></label>
+                <label>X 게시 주기 <span class="unit-input"><input id="publish-interval-input" name="publishInterval" type="number" min="0" max="3600" value="0" required><span>초</span></span><small>확인된 순서대로 글을 한 건씩 게시합니다. 함께 확인된 쿠팡 댓글은 바로 아래에 붙습니다. 0초는 대기 없이 게시합니다.</small></label>
+                <label>댓글 확인 기간 <span class="unit-input"><input id="lookback-input" name="lookback" type="number" min="1" max="365" value="7" required><span>일</span></span><small>Threads 원글 게시일부터 며칠 동안 댓글을 확인할지 설정합니다.</small></label>
+                <label id="since-field">첫 게시 기준 시각 <small>한국 시간 · 비우면 처음 자동화를 실행한 시점부터 가져옵니다.</small><input id="since-input" name="since" type="datetime-local"></label>
+                <p id="since-fixed" class="subtle" hidden></p>
+                <div class="form-actions"><button type="submit" class="button button-primary">변경사항 저장</button></div>
+              </form>
+            </section>
+
+            <section class="panel form-panel" aria-labelledby="windows-title">
+              <div class="panel-heading"><div><h2 id="windows-title">Windows 자동 실행</h2><p>로그인한 동안 백그라운드에서 실행됩니다.</p></div></div>
+              <div class="form-body"><div class="task-info"><span class="device-icon" aria-hidden="true"></span><div><strong id="task-title">상태 확인 중</strong><p id="task-description">Windows 작업 스케줄러를 확인하는 중입니다.</p></div></div><div class="form-actions"><button type="button" class="button button-primary" id="task-toggle">자동화 시작</button></div></div>
+            </section>
+          </div>
+        </div>
+        <p id="system-error" class="notice system-error" role="alert" hidden></p>
+      </main>
+    </div>
+  </div>
+
+  <template id="account-template">
+    <article class="panel account-card">
+      <div class="account-top"><div class="account-identity"><span class="platform-logo" aria-hidden="true"></span><div><h3></h3><p class="account-role"></p></div></div><span class="pill account-state"><i></i><span>확인 중</span></span></div>
+      <p class="account-description"></p>
+      <div class="account-actions"><button type="button" class="button" data-connect></button><a class="text-link" target="_blank" rel="noopener noreferrer">발급 가이드 <span aria-hidden="true">↗</span></a></div>
+    </article>
+  </template>
+
+  <template id="empty-template"><div class="empty-state"><span class="empty-icon" aria-hidden="true">≡</span><div><strong></strong><p></p></div></div></template>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <div class="modal-header"><div><h2 id="modal-title"></h2><p id="modal-description"></p></div><button type="button" class="close-button" aria-label="닫기" id="modal-close">×</button></div>
+    <div class="modal-content" id="modal-content"></div>
+    <p id="modal-error" class="notice system-error modal-error" role="alert" hidden></p>
+  </dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
